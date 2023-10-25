@@ -15,10 +15,9 @@ export class AppService {
                 socket.on('onMessage', (data) => {
                   console.log(data);
                 });
-                socket.emit('newMessage', {
-                  msg: 'hihihi',
-                });
                 socket.connect();
+                socket.emit('con', 'abc');
+                setTimeout(()=>{socket.emit('discon');}, 2000);                
             </script>
         </head>
         <body>

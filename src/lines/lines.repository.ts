@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Line } from 'src/entities/line.entity';
 
+// TODO: transaction
+
 @Injectable()
 export class LinesRepository {
-  lines: Line[] = [];
+  lines: Line[] = [{id1: 'abc', id2: ''}];
+  
   async save(line: Line): Promise<void> {
     this.lines.push(line);
   }
