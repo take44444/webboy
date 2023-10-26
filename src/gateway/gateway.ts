@@ -21,37 +21,55 @@ export class Gateway implements OnModuleInit {
     this.io.on('connection', async (socket) => {
       await this.create(socket.id);
       socket.join(socket.id);
-      console.log(socket.id + 'connected!');
       console.log(this.linesRepository.lines);
       socket.on('disconnect', async () => {
         const id2 = await this.disconnect(socket.id);
+        if (id2 !== "") {
+          const socket2 = (await this.io.in(id2).fetchSockets()).find((s) => s.id === id2);
+          assert(socket2 !== undefined);
+          socket.emit('leave');
+          socket2.emit('leave');
+          socket.leave(id2);
+          socket2.leave(socket.id);
+        }
         await this.delete(socket.id);
-        if (id2 !== "") socket.leave(id2);
-        this.io.in(socket.id).socketsLeave(socket.id);
-        console.log(socket.id + 'disconnected!');
         console.log(this.linesRepository.lines);
       });
     });
   }
 
-  @SubscribeMessage('con')
-  async onconnect(@MessageBody() id: string, @ConnectedSocket() socket: Socket) {
-    if (await this.connect(socket.id, id)) {
-      this.io.in(id).socketsJoin(socket.id);
+  @SubscribeMessage('join')
+  async onjoin(@MessageBody() id: string, @ConnectedSocket() socket: Socket) {
+    if (socket.id !== id && await this.connect(socket.id, id)) {
+      const socket2 = (await this.io.in(id).fetchSockets()).find((s) => s.id === id);
+      assert(socket2 !== undefined);
+      socket.emit('join', id);
+      socket2.emit('join', socket.id);
       socket.join(id);
+      socket2.join(socket.id);
     }
     console.log(this.linesRepository.lines);
-    this.io.emit('con', id);
   }
 
-  @SubscribeMessage('discon')
-  async ondisconnect(@ConnectedSocket() socket: Socket) {
+  @SubscribeMessage('leave')
+  async onleave(@ConnectedSocket() socket: Socket) {
     const id2 = await this.disconnect(socket.id);
-    if (id2 !== "") socket.leave(id2);
-    this.io.in(socket.id).socketsLeave(socket.id);
-    socket.join(socket.id);
+    if (id2 !== "") {
+      const socket2 = (await this.io.in(id2).fetchSockets()).find((s) => s.id === id2);
+      assert(socket2 !== undefined);
+      socket.emit('leave');
+      socket2.emit('leave');
+      socket.leave(id2);
+      socket2.leave(socket.id);
+    }
     console.log(this.linesRepository.lines);
-    this.io.emit('discon');
+  }
+
+  @SubscribeMessage('serial')
+  async onserial(@MessageBody() data: number, @ConnectedSocket() socket: Socket) {
+    const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
+    assert(socket2 !== undefined);
+    socket2.emit('serial', data);
   }
 
   // サイト接続

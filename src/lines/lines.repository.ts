@@ -5,7 +5,7 @@ import { Line } from 'src/entities/line.entity';
 
 @Injectable()
 export class LinesRepository {
-  lines: Line[] = [{id1: 'abc', id2: ''}];
+  lines: Line[] = [];
   
   async save(line: Line): Promise<void> {
     this.lines.push(line);
