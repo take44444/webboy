@@ -65,11 +65,18 @@ export class Gateway implements OnModuleInit {
     console.log(this.linesRepository.lines);
   }
 
-  @SubscribeMessage('serial')
-  async onserial(@MessageBody() data: number, @ConnectedSocket() socket: Socket) {
+  @SubscribeMessage('master')
+  async onmaster(@MessageBody() data: number, @ConnectedSocket() socket: Socket) {
     const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
     assert(socket2 !== undefined);
-    socket2.emit('serial', data);
+    socket2.emit('master', data);
+  }
+
+  @SubscribeMessage('slave')
+  async onslave(@MessageBody() data: number, @ConnectedSocket() socket: Socket) {
+    const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
+    assert(socket2 !== undefined);
+    socket2.emit('slave', data);
   }
 
   // サイト接続
