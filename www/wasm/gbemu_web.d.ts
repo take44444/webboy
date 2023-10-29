@@ -24,15 +24,33 @@ export class GameBoyHandle {
 /**
 * @param {Uint8Array} cart_rom
 * @param {Uint8Array} save
-* @param {Function} apu_callback
-* @param {Function} serial_callback
 * @returns {GameBoyHandle}
 */
-  static new(cart_rom: Uint8Array, save: Uint8Array, apu_callback: Function, serial_callback: Function): GameBoyHandle;
+  static new(cart_rom: Uint8Array, save: Uint8Array): GameBoyHandle;
+/**
+* @param {Function} apu_callback
+* @param {Function} serial_callback
+*/
+  set_callback(apu_callback: Function, serial_callback: Function): void;
+/**
+*/
+  clear_snapshots(): void;
+/**
+* @returns {number}
+*/
+  snapshots_length(): number;
+/**
+* @param {number} idx
+*/
+  rollback(idx: number): void;
+/**
+* @returns {boolean}
+*/
+  emulate_cycle(): boolean;
 /**
 * @returns {Uint8ClampedArray}
 */
-  emulate_frame(): Uint8ClampedArray;
+  frame_buffer(): Uint8ClampedArray;
 /**
 * @param {string} k
 */
@@ -60,8 +78,13 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly __wbg_gameboyhandle_free: (a: number) => void;
-  readonly gameboyhandle_new: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
-  readonly gameboyhandle_emulate_frame: (a: number) => number;
+  readonly gameboyhandle_new: (a: number, b: number, c: number, d: number) => number;
+  readonly gameboyhandle_set_callback: (a: number, b: number, c: number) => void;
+  readonly gameboyhandle_clear_snapshots: (a: number) => void;
+  readonly gameboyhandle_snapshots_length: (a: number) => number;
+  readonly gameboyhandle_rollback: (a: number, b: number) => void;
+  readonly gameboyhandle_emulate_cycle: (a: number) => number;
+  readonly gameboyhandle_frame_buffer: (a: number) => number;
   readonly gameboyhandle_key_down: (a: number, b: number, c: number) => void;
   readonly gameboyhandle_key_up: (a: number, b: number, c: number) => void;
   readonly gameboyhandle_serial_is_master: (a: number) => number;

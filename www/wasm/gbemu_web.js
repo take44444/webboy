@@ -312,23 +312,53 @@ export class GameBoyHandle {
     /**
     * @param {Uint8Array} cart_rom
     * @param {Uint8Array} save
-    * @param {Function} apu_callback
-    * @param {Function} serial_callback
     * @returns {GameBoyHandle}
     */
-    static new(cart_rom, save, apu_callback, serial_callback) {
+    static new(cart_rom, save) {
         const ptr0 = passArray8ToWasm0(cart_rom, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
         const ptr1 = passArray8ToWasm0(save, wasm.__wbindgen_malloc);
         const len1 = WASM_VECTOR_LEN;
-        const ret = wasm.gameboyhandle_new(ptr0, len0, ptr1, len1, addHeapObject(apu_callback), addHeapObject(serial_callback));
+        const ret = wasm.gameboyhandle_new(ptr0, len0, ptr1, len1);
         return GameBoyHandle.__wrap(ret);
+    }
+    /**
+    * @param {Function} apu_callback
+    * @param {Function} serial_callback
+    */
+    set_callback(apu_callback, serial_callback) {
+        wasm.gameboyhandle_set_callback(this.__wbg_ptr, addHeapObject(apu_callback), addHeapObject(serial_callback));
+    }
+    /**
+    */
+    clear_snapshots() {
+        wasm.gameboyhandle_clear_snapshots(this.__wbg_ptr);
+    }
+    /**
+    * @returns {number}
+    */
+    snapshots_length() {
+        const ret = wasm.gameboyhandle_snapshots_length(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+    * @param {number} idx
+    */
+    rollback(idx) {
+        wasm.gameboyhandle_rollback(this.__wbg_ptr, idx);
+    }
+    /**
+    * @returns {boolean}
+    */
+    emulate_cycle() {
+        const ret = wasm.gameboyhandle_emulate_cycle(this.__wbg_ptr);
+        return ret !== 0;
     }
     /**
     * @returns {Uint8ClampedArray}
     */
-    emulate_frame() {
-        const ret = wasm.gameboyhandle_emulate_frame(this.__wbg_ptr);
+    frame_buffer() {
+        const ret = wasm.gameboyhandle_frame_buffer(this.__wbg_ptr);
         return takeObject(ret);
     }
     /**
@@ -403,6 +433,13 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
     const imports = {};
     imports.wbg = {};
+    imports.wbg.__wbindgen_object_drop_ref = function(arg0) {
+        takeObject(arg0);
+    };
+    imports.wbg.__wbindgen_number_new = function(arg0) {
+        const ret = arg0;
+        return addHeapObject(ret);
+    };
     imports.wbg.__wbindgen_cb_drop = function(arg0) {
         const obj = takeObject(arg0).original;
         if (obj.cnt-- == 1) {
@@ -411,13 +448,6 @@ function __wbg_get_imports() {
         }
         const ret = false;
         return ret;
-    };
-    imports.wbg.__wbindgen_number_new = function(arg0) {
-        const ret = arg0;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_object_drop_ref = function(arg0) {
-        takeObject(arg0);
     };
     imports.wbg.__wbindgen_boolean_get = function(arg0) {
         const v = getObject(arg0);
@@ -575,8 +605,8 @@ function __wbg_get_imports() {
         const ret = wasm.memory;
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper403 = function(arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 117, __wbg_adapter_22);
+    imports.wbg.__wbindgen_closure_wrapper418 = function(arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 118, __wbg_adapter_22);
         return addHeapObject(ret);
     };
 

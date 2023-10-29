@@ -66,10 +66,13 @@ export class Gateway implements OnModuleInit {
   }
 
   @SubscribeMessage('master')
-  async onmaster(@MessageBody() data: number, @ConnectedSocket() socket: Socket) {
+  async onmaster(@MessageBody() data: any, @ConnectedSocket() socket: Socket) {
     const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
-    assert(socket2 !== undefined);
-    socket2.emit('master', data);
+    if (socket2 === undefined) {
+      socket.emit('slave', 0xFF);
+    } else {
+      socket2.emit('master', data);
+    }
   }
 
   @SubscribeMessage('slave')
@@ -78,6 +81,13 @@ export class Gateway implements OnModuleInit {
     assert(socket2 !== undefined);
     socket2.emit('slave', data);
   }
+
+  // @SubscribeMessage('master_received')
+  // async onmaster_received(@ConnectedSocket() socket: Socket) {
+  //   const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
+  //   assert(socket2 !== undefined);
+  //   socket2.emit('master_received');
+  // }
 
   // サイト接続
   async create(id: string): Promise<void> {

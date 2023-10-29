@@ -2,8 +2,13 @@
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
 export function __wbg_gameboyhandle_free(a: number): void;
-export function gameboyhandle_new(a: number, b: number, c: number, d: number, e: number, f: number): number;
-export function gameboyhandle_emulate_frame(a: number): number;
+export function gameboyhandle_new(a: number, b: number, c: number, d: number): number;
+export function gameboyhandle_set_callback(a: number, b: number, c: number): void;
+export function gameboyhandle_clear_snapshots(a: number): void;
+export function gameboyhandle_snapshots_length(a: number): number;
+export function gameboyhandle_rollback(a: number, b: number): void;
+export function gameboyhandle_emulate_cycle(a: number): number;
+export function gameboyhandle_frame_buffer(a: number): number;
 export function gameboyhandle_key_down(a: number, b: number, c: number): void;
 export function gameboyhandle_key_up(a: number, b: number, c: number): void;
 export function gameboyhandle_serial_is_master(a: number): number;
