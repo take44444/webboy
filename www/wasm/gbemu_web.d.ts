@@ -29,20 +29,9 @@ export class GameBoyHandle {
   static new(cart_rom: Uint8Array, save: Uint8Array): GameBoyHandle;
 /**
 * @param {Function} apu_callback
-* @param {Function} serial_callback
+* @param {Function} send_callback
 */
-  set_callback(apu_callback: Function, serial_callback: Function): void;
-/**
-*/
-  clear_snapshots(): void;
-/**
-* @returns {number}
-*/
-  snapshots_length(): number;
-/**
-* @param {number} idx
-*/
-  rollback(idx: number): void;
+  set_callback(apu_callback: Function, send_callback: Function): void;
 /**
 * @returns {boolean}
 */
@@ -80,9 +69,6 @@ export interface InitOutput {
   readonly __wbg_gameboyhandle_free: (a: number) => void;
   readonly gameboyhandle_new: (a: number, b: number, c: number, d: number) => number;
   readonly gameboyhandle_set_callback: (a: number, b: number, c: number) => void;
-  readonly gameboyhandle_clear_snapshots: (a: number) => void;
-  readonly gameboyhandle_snapshots_length: (a: number) => number;
-  readonly gameboyhandle_rollback: (a: number, b: number) => void;
   readonly gameboyhandle_emulate_cycle: (a: number) => number;
   readonly gameboyhandle_frame_buffer: (a: number) => number;
   readonly gameboyhandle_key_down: (a: number, b: number, c: number) => void;
@@ -98,6 +84,7 @@ export interface InitOutput {
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
   readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h9f8d421cd8441cd2: (a: number, b: number) => void;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
 }
 
