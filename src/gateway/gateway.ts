@@ -21,7 +21,6 @@ export class Gateway implements OnModuleInit {
     this.io.on('connection', async (socket) => {
       await this.create(socket.id);
       socket.join(socket.id);
-      console.log(this.linesRepository.lines);
       socket.on('disconnect', async () => {
         const id2 = await this.disconnect(socket.id);
         if (id2 !== "") {
@@ -33,7 +32,6 @@ export class Gateway implements OnModuleInit {
           socket2.leave(socket.id);
         }
         await this.delete(socket.id);
-        console.log(this.linesRepository.lines);
       });
     });
   }
@@ -48,7 +46,6 @@ export class Gateway implements OnModuleInit {
       socket.join(id);
       socket2.join(socket.id);
     }
-    console.log(this.linesRepository.lines);
   }
 
   @SubscribeMessage('leave')
@@ -62,7 +59,6 @@ export class Gateway implements OnModuleInit {
       socket.leave(id2);
       socket2.leave(socket.id);
     }
-    console.log(this.linesRepository.lines);
   }
 
   @SubscribeMessage('master')

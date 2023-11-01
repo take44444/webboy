@@ -19,17 +19,15 @@ ctx.fillRect(0.0, 0.0, canvas.width, canvas.height);
 async function main() {
   await init();
 
-  const socket = io('http://localhost:3000');
+  const socket = io();
   socket.on('connect', () => {
     document.getElementById('me').textContent = 'ID: ' + socket.id;
   });
   socket.on('leave', () => {
     connection.textContent = 'Disconnected';
-    console.log('leaved');
   });
   socket.on('join', (data) => {
     connection.textContent = 'Connected to ' + data;
-    console.log('joined ' + data);
   });
   connect.onsubmit = (e) => {
     e.preventDefault();
