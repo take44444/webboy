@@ -8,6 +8,7 @@ const rom_input = document.getElementById("rom_input");
 const sav_input = document.getElementById("sav_input");
 const on = document.getElementById("on");
 const off = document.getElementById("off");
+const save = document.getElementById("save");
 
 const connect = document.getElementById("connect");
 const disconnect = document.getElementById("disconnect");
@@ -52,9 +53,7 @@ async function main() {
   };
 
   on.onclick = (_) => {
-    if (rom_file === null || gameboy !== null) {
-      return;
-    }
+    if (rom_file === null || gameboy !== null) return;
     let rom = null;
     let sav = new Uint8Array();
     let lockstep = false;
@@ -145,6 +144,23 @@ async function main() {
         };
       }
     };
+  };
+
+  save.onclick = (_) => {
+    if (!running || gameboy === null) return;
+    const sav_data = gameboy.save();
+    if (sav_data.length === 0) return;
+    var a = document.createElement("a");
+    a.style = "display: none";
+    document.body.appendChild(a);
+
+    var blob = new Blob([sav_data.buffer], {type: "octet/stream"}),
+    url = window.URL.createObjectURL(blob);
+
+    a.href = url;
+    a.download = gameboy.title() + ".SAV";
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   off.onclick = (_) => {

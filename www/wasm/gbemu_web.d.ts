@@ -33,6 +33,14 @@ export class GameBoyHandle {
 */
   set_callback(apu_callback: Function, send_callback: Function): void;
 /**
+* @returns {string}
+*/
+  title(): string;
+/**
+* @returns {Uint8Array}
+*/
+  save(): Uint8Array;
+/**
 * @returns {boolean}
 */
   emulate_cycle(): boolean;
@@ -69,6 +77,8 @@ export interface InitOutput {
   readonly __wbg_gameboyhandle_free: (a: number) => void;
   readonly gameboyhandle_new: (a: number, b: number, c: number, d: number) => number;
   readonly gameboyhandle_set_callback: (a: number, b: number, c: number) => void;
+  readonly gameboyhandle_title: (a: number) => number;
+  readonly gameboyhandle_save: (a: number) => number;
   readonly gameboyhandle_emulate_cycle: (a: number) => number;
   readonly gameboyhandle_frame_buffer: (a: number) => number;
   readonly gameboyhandle_key_down: (a: number, b: number, c: number) => void;

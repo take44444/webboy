@@ -330,6 +330,20 @@ export class GameBoyHandle {
         wasm.gameboyhandle_set_callback(this.__wbg_ptr, addHeapObject(apu_callback), addHeapObject(send_callback));
     }
     /**
+    * @returns {string}
+    */
+    title() {
+        const ret = wasm.gameboyhandle_title(this.__wbg_ptr);
+        return takeObject(ret);
+    }
+    /**
+    * @returns {Uint8Array}
+    */
+    save() {
+        const ret = wasm.gameboyhandle_save(this.__wbg_ptr);
+        return takeObject(ret);
+    }
+    /**
     * @returns {boolean}
     */
     emulate_cycle() {
@@ -575,6 +589,14 @@ function __wbg_get_imports() {
         const ret = getObject(arg0).buffer;
         return addHeapObject(ret);
     };
+    imports.wbg.__wbg_newwithbyteoffsetandlength_6da8e527659b86aa = function(arg0, arg1, arg2) {
+        const ret = new Uint8Array(getObject(arg0), arg1 >>> 0, arg2 >>> 0);
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbg_new_8125e318e6245eed = function(arg0) {
+        const ret = new Uint8Array(getObject(arg0));
+        return addHeapObject(ret);
+    };
     imports.wbg.__wbg_newwithbyteoffsetandlength_a624c98280289b0f = function(arg0, arg1, arg2) {
         const ret = new Uint8ClampedArray(getObject(arg0), arg1 >>> 0, arg2 >>> 0);
         return addHeapObject(ret);
@@ -609,7 +631,7 @@ function __wbg_get_imports() {
         const ret = wasm.memory;
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper433 = function(arg0, arg1, arg2) {
+    imports.wbg.__wbindgen_closure_wrapper441 = function(arg0, arg1, arg2) {
         const ret = makeMutClosure(arg0, arg1, 129, __wbg_adapter_22);
         return addHeapObject(ret);
     };

@@ -11,6 +11,8 @@
     <p id="me">ID: -</p>
   </div>
   <div style="position: absolute; left: 2%; width: 15%;">
+    <b>MBC1</b>，<b>MBC3</b>，<b>MBC5</b>のソフトが動作します．
+    <br />
     <h3>キーとボタンの対応</h3>
     W：<b>↑</b>
     <br />
@@ -28,19 +30,6 @@
     <br />
     4：<b>START</b>
   </div>
-  <div style="position: absolute; right: 2%; width: 15%;">
-    <h3>対応ゲームソフト</h3>
-    ・ポケットモンスター 赤・緑・青
-    <br />
-    ・スーパーマリオランド
-    <br />
-    ・テトリス
-    <br />
-    ・星のカービィ
-    <br />
-    <br />
-    などのMBC1と呼ばれるタイプのソフトは動作するはずです
-  </div>
   <div style="display: flex; justify-content: center; align-items: center;">
     <canvas id="canvas" width="640", height="576"></canvas>
   </div>
@@ -54,6 +43,7 @@
     <label for="sav_input">SAV file:</label>
     &nbsp;
     <input type="file" id="sav_input" name="sav_input">
+    <button id="save">SAVデータを出力</button>
   </div>
 
   <br />
@@ -62,12 +52,10 @@
     <button id="on">ON</button>
     &nbsp;
     <button id="off">OFF</button>
-    &nbsp;
     <form action="#" id="connect">
       <input type="text" name="data">
       <input type="submit" value="Connect">
     </form>
-    &nbsp;
     <button id="disconnect">Disconnect</button>
   </div>
   <div style="display: flex; justify-content: center; align-items: center;">

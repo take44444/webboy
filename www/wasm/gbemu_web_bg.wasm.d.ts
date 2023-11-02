@@ -4,6 +4,8 @@ export const memory: WebAssembly.Memory;
 export function __wbg_gameboyhandle_free(a: number): void;
 export function gameboyhandle_new(a: number, b: number, c: number, d: number): number;
 export function gameboyhandle_set_callback(a: number, b: number, c: number): void;
+export function gameboyhandle_title(a: number): number;
+export function gameboyhandle_save(a: number): number;
 export function gameboyhandle_emulate_cycle(a: number): number;
 export function gameboyhandle_frame_buffer(a: number): number;
 export function gameboyhandle_key_down(a: number, b: number, c: number): void;
