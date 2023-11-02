@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WEB BOY</title>
+</head>
+<body>
+  <div style="display: flex;justify-content: center;align-items: flex-start;">
+    <h1>WEB BOY</h1>
+  </div>
+  <div style="position: absolute; left: 2%; width: 15%;">
+    <b>MBC1</b>，<b>MBC3</b>，<b>MBC5</b>のソフトが動作します．
+    <br />
+    <h3>キーとボタンの対応</h3>
+    W：<b>↑</b>
+    <br />
+    A：<b>←</b>
+    <br />
+    S：<b>↓</b>
+    <br />
+    D：<b>→</b>
+    <br />
+    1：<b>A</b>
+    <br />
+    2：<b>B</b>
+    <br />
+    3：<b>SELECT</b>
+    <br />
+    4：<b>START</b>
+
+    <h3>GitHub</h3>
+    良ければ下の2つのrepositoryにスターをお願いいたします！
+    <br />
+    <a href="https://github.com/take44444/gb-emu" target="_blank" rel="noopener noreferrer">https://github.com/take44444/gb-emu</a>
+    <br />
+    <a href="https://github.com/take44444/webboy" target="_blank" rel="noopener noreferrer">https://github.com/take44444/webboy</a>
+  </div>
+  <div style="display: flex; justify-content: center; align-items: center;">
+    <canvas id="canvas" width="640", height="576"></canvas>
+  </div>
+
+  <br />
+
+  <div style="display: flex; justify-content: center; align-items: center;">
+    <label for="rom_input">ROM file:</label>
+    &nbsp;
+    <input type="file" id="rom_input" name="rom_input">
+    <label for="sav_input">SAV file:</label>
+    &nbsp;
+    <input type="file" id="sav_input" name="sav_input">
+    <button id="save">SAVデータを出力</button>
+  </div>
+
+  <br />
+
+  <div style="display: flex; justify-content: center; align-items: center;">
+    <button id="on">ON</button>
+    &nbsp;
+    <button id="off">OFF</button>
+  </div>
+
+  <script type="module" src="js/index.js"></script>
+</body>
+</html>
