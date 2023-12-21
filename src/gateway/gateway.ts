@@ -10,7 +10,9 @@ import { assert } from 'console';
 import { Socket, Server } from 'socket.io';
 import { LinesRepository } from 'src/lines/lines.repository';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  maxHttpBufferSize: 500 * 1024 * 1024
+})
 export class Gateway implements OnModuleInit {
   constructor (private readonly linesRepository: LinesRepository) {}
 
@@ -25,11 +27,12 @@ export class Gateway implements OnModuleInit {
         const id2 = await this.disconnect(socket.id);
         if (id2 !== "") {
           const socket2 = (await this.io.in(id2).fetchSockets()).find((s) => s.id === id2);
-          assert(socket2 !== undefined);
           socket.emit('leave');
-          socket2.emit('leave');
           socket.leave(id2);
-          socket2.leave(socket.id);
+          if (socket2 !== undefined) {
+            socket2.emit('leave');
+            socket2.leave(socket.id);
+          }
         }
         await this.delete(socket.id);
       });
@@ -40,11 +43,12 @@ export class Gateway implements OnModuleInit {
   async onjoin(@MessageBody() id: string, @ConnectedSocket() socket: Socket) {
     if (socket.id !== id && await this.connect(socket.id, id)) {
       const socket2 = (await this.io.in(id).fetchSockets()).find((s) => s.id === id);
-      assert(socket2 !== undefined);
-      socket.emit('join', id);
-      socket2.emit('join', socket.id);
-      socket.join(id);
-      socket2.join(socket.id);
+      if (socket2 !== undefined) {
+        socket.emit('join', id);
+        socket.join(id);
+        socket2.emit('join', socket.id);
+        socket2.join(socket.id);
+      }
     }
   }
 
@@ -53,37 +57,32 @@ export class Gateway implements OnModuleInit {
     const id2 = await this.disconnect(socket.id);
     if (id2 !== "") {
       const socket2 = (await this.io.in(id2).fetchSockets()).find((s) => s.id === id2);
-      assert(socket2 !== undefined);
       socket.emit('leave');
-      socket2.emit('leave');
       socket.leave(id2);
-      socket2.leave(socket.id);
+      if (socket2 !== undefined) {
+        socket2.emit('leave');
+        socket2.leave(socket.id);
+      }
     }
   }
 
-  @SubscribeMessage('master')
-  async onmaster(@MessageBody() data: any, @ConnectedSocket() socket: Socket) {
+  @SubscribeMessage('sync')
+  async onsync(@MessageBody() data: string, @ConnectedSocket() socket: Socket) {
     const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
-    if (socket2 === undefined) {
-      socket.emit('slave', 0xFF);
-    } else {
-      socket2.emit('master', data);
-    }
+    if (socket2 !== undefined) socket2.emit('sync', data);
   }
 
-  @SubscribeMessage('slave')
-  async onslave(@MessageBody() data: number, @ConnectedSocket() socket: Socket) {
+  @SubscribeMessage('keydown')
+  async onkeydown(@MessageBody() data: string, @ConnectedSocket() socket: Socket) {
     const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
-    assert(socket2 !== undefined);
-    socket2.emit('slave', data);
+    if (socket2 !== undefined) socket2.emit('keydown', data);
   }
 
-  // @SubscribeMessage('master_received')
-  // async onmaster_received(@ConnectedSocket() socket: Socket) {
-  //   const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
-  //   assert(socket2 !== undefined);
-  //   socket2.emit('master_received');
-  // }
+  @SubscribeMessage('keyup')
+  async onkeyup(@MessageBody() data: string, @ConnectedSocket() socket: Socket) {
+    const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
+    if (socket2 !== undefined) socket2.emit('keyup', data);
+  }
 
   // サイト接続
   async create(id: string): Promise<void> {

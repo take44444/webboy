@@ -15,77 +15,58 @@ ctx.fillRect(0.0, 0.0, canvas.width, canvas.height);
 async function main() {
   await init();
 
-  let rom_file = null;
-  let sav_file = null;
+  let rom = null;
+  let sav = new Uint8Array();
   let gameboy = null;
   let running = false;
 
   rom_input.oninput = (_) => {
-    rom_file = rom_input.files[0];
-  };
-  sav_input.oninput = (_) => {
-    sav_file = sav_input.files[0];
-  };
-
-  on.onclick = (_) => {
-    if (rom_file === null || gameboy !== null) return;
-    let rom = null;
-    let sav = new Uint8Array();
-    let run = () => {
-      running = true;
-
-      gameboy = GameBoyHandle.new(rom, sav);
-      let audio = AudioHandle.new();
-      let intervalID = null;
-
-      let apu_callback = (buffer) => {
-        audio.append(buffer);
-      };
-      gameboy.set_callback(apu_callback, (_) => {});
-
-      function main_loop() {
-        if (!running) {
-          gameboy = null;
-          audio = null;
-          clearInterval(intervalID);
-          return;
-        }
-
-        if (audio.length() < 15) {
-          while (true) {
-            if (gameboy.emulate_cycle()) {
-              let framebuffer = gameboy.frame_buffer();
-              let image_data = new ImageData(framebuffer, 160, 144);
-              createImageBitmap(image_data, {
-                resizeQuality: "pixelated",
-                resizeWidth: 640,
-                resizeHeight: 576,
-              }).then((bitmap) => {
-                ctx.drawImage(bitmap, 0.0, 0.0);
-              });
-              return;
-            }
-          }
-        }
-      }
-      intervalID = setInterval(main_loop, 15);
-    };
-
     let reader1 = new FileReader();
-    reader1.readAsArrayBuffer(rom_file);
+    reader1.readAsArrayBuffer(rom_input.files[0]);
     reader1.onloadend = (_) => {
       rom = new Uint8Array(reader1.result);
-      if (sav_file === null) {
-        run();
-      } else {
-        let reader2 = new FileReader();
-        reader2.readAsArrayBuffer(sav_file);
-        reader2.onloadend = (_) => {
-          sav = new Uint8Array(reader2.result);
-          run();
-        };
-      }
     };
+  };
+  sav_input.oninput = (_) => {
+    let reader2 = new FileReader();
+    reader2.readAsArrayBuffer(sav_input.files[0]);
+    reader2.onloadend = (_) => {
+      sav = new Uint8Array(reader2.result);
+    }
+  }
+
+  on.onclick = (_) => {
+    if (rom === null || gameboy !== null) return;
+    running = true;
+
+    gameboy = GameBoyHandle.new(rom, sav);
+    let audio = AudioHandle.new();
+    let intervalID = null;
+
+    gameboy.set_apu_callback((buffer) => {
+      audio.append(buffer);
+    });
+
+    function main_loop() {
+      if (!running) {
+        gameboy = null;
+        clearInterval(intervalID);
+        return;
+      }
+      if (audio.length() < 15) {
+        while (!gameboy.emulate_cycle()) {}
+        let framebuffer = gameboy.frame_buffer();
+        let image_data = new ImageData(framebuffer, 160, 144);
+        createImageBitmap(image_data, {
+          resizeQuality: "pixelated",
+          resizeWidth: 640,
+          resizeHeight: 576,
+        }).then((bitmap) => {
+          ctx.drawImage(bitmap, 0.0, 0.0);
+        });
+      }
+    }
+    intervalID = setInterval(main_loop, 15);
   };
 
   save.onclick = (_) => {
@@ -111,15 +92,11 @@ async function main() {
   };
 
   document.onkeydown = (e) => {
-    if (gameboy !== null) {
-      gameboy.key_down(e.code);
-    }
+    if (gameboy !== null) gameboy.key_down(e.code);
   }
 
   document.onkeyup = (e) => {
-    if (gameboy !== null) {
-      gameboy.key_up(e.code);
-    }
+    if (gameboy !== null) gameboy.key_up(e.code);
   }
 }
 
