@@ -44,9 +44,9 @@ export class Gateway implements OnModuleInit {
     if (socket.id !== id && await this.connect(socket.id, id)) {
       const socket2 = (await this.io.in(id).fetchSockets()).find((s) => s.id === id);
       if (socket2 !== undefined) {
-        socket.emit('join', id);
+        socket.emit('slave', id);
         socket.join(id);
-        socket2.emit('join', socket.id);
+        socket2.emit('master', socket.id);
         socket2.join(socket.id);
       }
     }
@@ -64,6 +64,12 @@ export class Gateway implements OnModuleInit {
         socket2.leave(socket.id);
       }
     }
+  }
+
+  @SubscribeMessage('init')
+  async oninit(@MessageBody() data: string, @ConnectedSocket() socket: Socket) {
+    const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
+    if (socket2 !== undefined) socket2.emit('init', data);
   }
 
   @SubscribeMessage('sync')
