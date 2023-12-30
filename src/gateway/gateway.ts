@@ -39,17 +39,22 @@ export class Gateway implements OnModuleInit {
     });
   }
 
-  @SubscribeMessage('join')
-  async onjoin(@MessageBody() id: string, @ConnectedSocket() socket: Socket) {
-    if (socket.id !== id && await this.connect(socket.id, id)) {
-      const socket2 = (await this.io.in(id).fetchSockets()).find((s) => s.id === id);
+  @SubscribeMessage('syncinit1')
+  async onsyncinit1(@MessageBody() data: any, @ConnectedSocket() socket: Socket) {
+    if (socket.id !== data.id && await this.connect(socket.id, data.id)) {
+      const socket2 = (await this.io.in(data.id).fetchSockets()).find((s) => s.id === data.id);
       if (socket2 !== undefined) {
-        socket.emit('slave', id);
-        socket.join(id);
-        socket2.emit('master', socket.id);
+        socket.join(data.id);
+        socket2.emit('syncinit1', {id: socket.id, gameboy: data.gameboy});
         socket2.join(socket.id);
       }
     }
+  }
+
+  @SubscribeMessage('syncinit2')
+  async onsyncinit2(@MessageBody() data: string, @ConnectedSocket() socket: Socket) {
+    const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
+    if (socket2 !== undefined) socket2.emit('syncinit2', {id: socket.id, gameboy: data});
   }
 
   @SubscribeMessage('leave')
@@ -66,28 +71,10 @@ export class Gateway implements OnModuleInit {
     }
   }
 
-  @SubscribeMessage('init')
-  async oninit(@MessageBody() data: string, @ConnectedSocket() socket: Socket) {
+  @SubscribeMessage('input_history')
+  async oninput_history(@MessageBody() data: any, @ConnectedSocket() socket: Socket) {
     const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
-    if (socket2 !== undefined) socket2.emit('init', data);
-  }
-
-  @SubscribeMessage('sync')
-  async onsync(@MessageBody() data: string, @ConnectedSocket() socket: Socket) {
-    const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
-    if (socket2 !== undefined) socket2.emit('sync', data);
-  }
-
-  @SubscribeMessage('keydown')
-  async onkeydown(@MessageBody() data: string, @ConnectedSocket() socket: Socket) {
-    const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
-    if (socket2 !== undefined) socket2.emit('keydown', data);
-  }
-
-  @SubscribeMessage('keyup')
-  async onkeyup(@MessageBody() data: string, @ConnectedSocket() socket: Socket) {
-    const socket2 = (await this.io.in(socket.id).fetchSockets()).find((s) => s.id !== socket.id);
-    if (socket2 !== undefined) socket2.emit('keyup', data);
+    if (socket2 !== undefined) socket2.emit('input_history', data);
   }
 
   // サイト接続
